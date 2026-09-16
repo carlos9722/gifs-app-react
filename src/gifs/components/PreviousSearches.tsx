@@ -1,19 +1,28 @@
+import type { FC } from "react";
+
+interface Props {
+  /** Términos de búsqueda realizados previamente. */
+  searches: string[];
+}
+
 /**
- * PreviousSearches
+ * Muestra el listado de búsquedas realizadas previamente.
  *
- * Muestra una lista con las búsquedas realizadas previamente.
+ * `FC<Props>` indica que el componente es un Functional Component
+ * y que recibe las props definidas en la interfaz `Props`.
  *
- * @returns {JSX.Element} Elemento JSX que contiene la lista de búsquedas.
+ * @param searches - Términos que se mostrarán en la lista.
  */
-export const PreviousSearches = () => {
+export const PreviousSearches: FC<Props> = ({ searches }) => {
   return (
     <div className="previous-searches">
-            <h2>Busquedas previas</h2>
-            <ul className="previous-searches-list">
-                <li>Goku</li>
-                <li>Saitama</li>
-                <li>All might</li>
-            </ul>
+      <h2>Búsquedas previas</h2>
+
+      <ul className="previous-searches-list">
+        {searches.map((term) => (
+          <li key={term}>{term}</li>
+        ))}
+      </ul>
     </div>
   );
 };

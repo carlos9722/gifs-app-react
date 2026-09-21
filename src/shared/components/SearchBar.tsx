@@ -23,9 +23,12 @@ interface Props {
  * Componente encargado de capturar el texto de búsqueda y
  * notificar al componente padre cuando se realiza una búsqueda.
  *
- * La búsqueda se ejecuta automáticamente después de 700 ms
- * sin que el usuario modifique el texto. También puede ejecutarse
- * inmediatamente al presionar Enter o el botón "Buscar".
+ * La búsqueda automática utiliza un debounce de 700 ms:
+ * espera ese tiempo después de que el usuario deja de escribir
+ * antes de ejecutar `onQuery`.
+ *
+ * También permite ejecutar la búsqueda inmediatamente al
+ * presionar Enter o el botón "Buscar".
  *
  * @param {Props} props - Propiedades recibidas por el componente.
  * @returns {JSX.Element} Campo de búsqueda y botón.
@@ -40,20 +43,43 @@ export const SearchBar = ({
   const [query, setQuery] = useState("");
 
   /**
-   * Ejecuta la búsqueda automáticamente después de 700 ms.
+   * Ejecuta automáticamente la búsqueda después de 700 ms
+   * desde la última modificación de `query`.
    *
-   * Si el usuario continúa escribiendo antes de que transcurra
-   * ese tiempo, se cancela el temporizador anterior para evitar
-   * ejecutar búsquedas innecesarias.
+   * Este comportamiento se conoce como debounce:
+   * mientras el usuario continúa escribiendo, la búsqueda
+   * anterior se cancela y se inicia un nuevo temporizador.
    */
   useEffect(() => {
+    /**
+     * Programa la ejecución de `onQuery` después de 700 ms.
+     * `timeoutId` guarda el identificador del temporizador
+     * para poder cancelarlo posteriormente.
+     */
     const timeoutId = setTimeout(() => {
+      // Envía el texto actual al componente padre.
       onQuery(query);
     }, 700);
 
+    /**
+     * Función de limpieza del efecto.
+     *
+     * React ejecuta esta función antes de volver a ejecutar
+     * el efecto cuando cambia alguna dependencia y cuando
+     * el componente se desmonta.
+     */
     return () => {
+      /**
+       * Cancela el temporizador anterior para evitar ejecutar
+       * una búsqueda que ya no corresponde al texto actual.
+       */
       clearTimeout(timeoutId);
     };
+
+    /**
+     * El efecto se ejecuta nuevamente cuando cambia `query`
+     * o cambia la referencia de la función `onQuery`.
+     */
   }, [query, onQuery]);
 
   /**
@@ -64,11 +90,11 @@ export const SearchBar = ({
   };
 
   /**
-   * Detecta cuando el usuario presiona una tecla en el campo
-   * de búsqueda y ejecuta la búsqueda al presionar Enter.
+   * Detecta cuando el usuario presiona una tecla en el input.
+   * Si la tecla es Enter, ejecuta inmediatamente la búsqueda.
    *
-   * @param {React.KeyboardEvent<HTMLInputElement>} event - Evento
-   * generado al presionar una tecla.
+   * @param {React.KeyboardEvent<HTMLInputElement>} event
+   * Evento generado al presionar una tecla.
    */
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>

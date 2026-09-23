@@ -62,6 +62,9 @@ export const useGifs = () => {
     // Si no existe en caché, obtiene los GIFs desde la API.
     const gifs = await getGifsByQuery(term);
 
+    //Guarda PRIMERO en la caché para asegurar que consultas inmediatas no dupliquen la petición.
+    gifsCache.current[term] = gifs
+
     // Actualiza los GIFs mostrados en pantalla.
     setGifs(gifs);
   };

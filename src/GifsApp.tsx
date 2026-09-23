@@ -1,6 +1,6 @@
 import { PreviousSearches } from "./gifs/components/PreviousSearches";
 import { CustomHeader } from "./shared/components/CustomHeader";
-import { GifsList } from "./shared/components/GifsList";
+import { GifsList } from "./gifs/components/GifsList";
 import { SearchBar } from "./shared/components/SearchBar";
 import { useGifs } from "./gifs/hooks/useGifs";
 
